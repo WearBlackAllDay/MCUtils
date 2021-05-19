@@ -3,8 +3,7 @@ package kaptainwutax.mcutils.rand.seed;
 
 import kaptainwutax.mcutils.util.data.SeedIterator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public final class StructureSeed {
 
@@ -29,17 +28,18 @@ public final class StructureSeed {
 	 * was generated from a {@code nextLong()} call or, in other words, generated
 	 * randomly after leaving the seed field empty.
 	 */
-	public static List<Long> toRandomWorldSeeds(long structureSeed) {
-		List<Long> randomWorldSeeds = new ArrayList<>();
+	public static long[] toRandomWorldSeeds(long structureSeed) {
+		//cant be more than 2
+		long[] results = new long[2];
+		int i = 0;
 
-		//TODO: You can do better than brute-force. Smh...
-		StructureSeed.getWorldSeeds(structureSeed).forEachRemaining(worldSeed -> {
-			if (WorldSeed.isRandom(worldSeed)) {
-				randomWorldSeeds.add(worldSeed);
+		//TODO still bruteforce.
+		for(long upperBits = 0L; upperBits < 1L << 16; upperBits++) {
+			if(WorldSeed.isRandom(toWorldSeed(structureSeed, upperBits))) {
+				results[i++] = toWorldSeed(structureSeed, upperBits);
 			}
-		});
-
-		return randomWorldSeeds;
+		}
+		return Arrays.copyOfRange(results, 0, i);
 	}
 
 	/**

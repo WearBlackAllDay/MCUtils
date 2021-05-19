@@ -7,8 +7,6 @@ import kaptainwutax.seedutils.rand.JRand;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 public final class WorldSeed {
@@ -106,21 +104,14 @@ public final class WorldSeed {
 	 *
 	 * @see WorldSeed#toHash(long)
 	 */
-	public static List<Long> fromHash(long structureSeed, long hashedWorldSeed) {
-		List<Long> worldSeeds = new ArrayList<>();
-
-		StructureSeed.getWorldSeeds(structureSeed).forEachRemaining(worldSeed -> {
-			if (WorldSeed.toHash(worldSeed) == hashedWorldSeed) {
-				worldSeeds.add(worldSeed);
-			}
-		});
-
-		if (worldSeeds.size() > 1) {
-			System.err.format("This should never happen. Open a github issue right now and provide the structure " +
-					"seed [%d] as well as the hashed seed [%d], you have stumbled upon an incredibly rare collision.\n", structureSeed, hashedWorldSeed);
+	public static long fromHash(long structureSeed, long hashedWorldSeed) {
+		SeedIterator worldSeeds = StructureSeed.getWorldSeeds(structureSeed);
+		long candidate = 0;
+		while(worldSeeds.hasNext()) {
+			candidate = WorldSeed.toHash(worldSeeds.next());
+			if(candidate == hashedWorldSeed) break;
 		}
-
-		return worldSeeds;
+		return candidate;
 	}
 
 	/**
